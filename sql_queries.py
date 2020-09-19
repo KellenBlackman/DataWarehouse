@@ -12,12 +12,12 @@ ARN = config.get('IAM_ROLE','ARN')
 # DROP TABLES
 
 staging_events_table_drop = "DROP TABLE IF EXISTS staging_events"
-staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs"
-songplay_table_drop = "DROP TABLE IF EXISTS fact_songplays"
-user_table_drop = "DROP TABLE IF EXISTS dim_users"
-song_table_drop = "DROP TABLE IF EXISTS dim_songs"
-artist_table_drop = "DROP TABLE IF EXISTS dim_artists"
-time_table_drop = "DROP TABLE IF EXISTS dim_times"
+staging_songs_table_drop =  "DROP TABLE IF EXISTS staging_songs"
+songplay_table_drop =       "DROP TABLE IF EXISTS fact_songplays"
+user_table_drop =           "DROP TABLE IF EXISTS dim_users"
+song_table_drop =           "DROP TABLE IF EXISTS dim_songs"
+artist_table_drop =         "DROP TABLE IF EXISTS dim_artists"
+time_table_drop =           "DROP TABLE IF EXISTS dim_times"
 
 # CREATE TABLES
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS staging_songs
 (
     num_songs           INTEGER     NOT NULL,
     artist_id           STRING      NOT NULL,
-    artist_lattitude     STRING,
+    artist_lattitude    STRING,
     artist_longitude    STRING,
     artist_location     STRING,
     artist_name         STRING      NOT NULL,
