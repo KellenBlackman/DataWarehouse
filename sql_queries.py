@@ -5,10 +5,6 @@ import configparser
 config = configparser.ConfigParser()
 config.read('dwh.cfg')
 
-LOG_DATA = config.get('S3','LOG_DATA')
-SONG_DATA = config.get('S3','SONG_DATA')
-ARN = config.get('IAM_ROLE','ARN')
-
 # DROP TABLES
 
 staging_events_table_drop = "DROP TABLE IF EXISTS staging_events"
@@ -129,14 +125,14 @@ COPY staging_events
 FROM {}
 credentials 'aws_iam_role={}'
 json region 'us-west-2'
-""").format(LOG_DATA,ARN)
+""").format("s3://udacity-dend/log_data","arn:aws:iam::878999672007:role/S3AccessRole")
 
 staging_songs_copy = ("""
 COPY staging_songs 
 FROM {}
 credentials 'aws_iam_role={}'
 json region 'us-west-2'
-""").format(SONG_DATA,ARN)
+""").format("s3://udacity-dend/song_data","arn:aws:iam::878999672007:role/S3AccessRole")
 
 # FINAL TABLES
 
