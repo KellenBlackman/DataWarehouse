@@ -1,2 +1,3 @@
-*.cfg
+aws_cred.cfg
+dwh.cfg
 data_model.drawio
