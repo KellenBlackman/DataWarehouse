@@ -4,54 +4,55 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read('dwh.cfg')
+DWH_ROLE_ARN = config['IAM_ROLE']['ARN']
 
 # DROP TABLES
 
 staging_events_table_drop = "DROP TABLE IF EXISTS staging_events"
-staging_songs_table_drop =  "DROP TABLE IF EXISTS staging_songs"
-songplay_table_drop =       "DROP TABLE IF EXISTS fact_songplays"
-user_table_drop =           "DROP TABLE IF EXISTS dim_users"
-song_table_drop =           "DROP TABLE IF EXISTS dim_songs"
-artist_table_drop =         "DROP TABLE IF EXISTS dim_artists"
-time_table_drop =           "DROP TABLE IF EXISTS dim_times"
+staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs"
+songplay_table_drop = "DROP TABLE IF EXISTS fact_songplays"
+user_table_drop = "DROP TABLE IF EXISTS dim_users"
+song_table_drop = "DROP TABLE IF EXISTS dim_songs"
+artist_table_drop = "DROP TABLE IF EXISTS dim_artists"
+time_table_drop = "DROP TABLE IF EXISTS dim_times"
 
 # CREATE TABLES
 
 staging_events_table_create = ("""
 CREATE TABLE IF NOT EXISTS staging_events
 (
-    artist              STRING,
-    auth                STRING      NOT NULL,
-    firstName           STRING      NOT NULL,
-    gender              VARCHAR(1)  NUL NULL,
+    artist              TEXT,
+    auth                TEXT        NOT NULL,
+    firstName           TEXT,
+    gender              VARCHAR(1),
     itemInSession       INTEGER     NOT NULL,
-    lastName            STRING      NOT NULL,
-    length              DOUBLE,
+    lastName            TEXT,
+    length              DECIMAL,
     level               VARCHAR(5)  NOT NULL,
-    location            STRING      NOT NULL,
+    location            TEXT,
     method              VARCHAR(3)  NOT NULL,
     page                VARCHAR(20) NOT NULL,
-    registration        NUMERIC     NOT NULL,
+    registration        DECIMAL,
     sessionId           SMALLINT    NOT NULL,
-    song                STRING,
+    song                TEXT,
     status              SMALLINT    NOT NULL,
-    ts                  INTEGER     NOT NULL,
-    userAgent           STRING,
-    userId              INTEGER     NOT NULL
+    ts                  BIGINT      NOT NULL,
+    userAgent           TEXT,
+    userId              INTEGER
 )
 """)
 
 staging_songs_table_create = ("""
 CREATE TABLE IF NOT EXISTS staging_songs
 (
-    num_songs           INTEGER     NOT NULL,
-    artist_id           STRING      NOT NULL,
-    artist_lattitude    STRING,
-    artist_longitude    STRING,
-    artist_location     STRING,
-    artist_name         STRING      NOT NULL,
-    song_id             STRING      NOT NULL,
-    title               STRING      NOT NULL,
+    num_songs           BIGINT      NOT NULL,
+    artist_id           TEXT        NOT NULL,
+    artist_latitude     TEXT,
+    artist_longitude    TEXT,
+    artist_location     TEXT,
+    artist_name         TEXT        NOT NULL,
+    song_id             TEXT        NOT NULL,
+    title               TEXT        NOT NULL,
     duration            DECIMAL     NOT NULL,
     year                INTEGER     NOT NULL
 )
@@ -60,25 +61,25 @@ CREATE TABLE IF NOT EXISTS staging_songs
 songplay_table_create = ("""
 CREATE TABLE IF NOT EXISTS fact_songplays
 (
-    songplay_id         SERIAL      PRIMARY KEY,
-    start_time          INTEGER     NOT NULL,
+    songplay_id         TEXT        PRIMARY KEY,
+    start_time          BIGINT      NOT NULL,
     user_id             INTEGER     NOT NULL,
     level               VARCHAR(5)  NOT NULL,
-    song_id             STRING      NOT NULL    SORTKEY,
-    artist_id           STRING      NOT NULL    DISTKEY,
+    song_id             TEXT        NOT NULL    SORTKEY,
+    artist_id           TEXT        NOT NULL    DISTKEY,
     session_id          SMALLINT    NOT NULL,
-    location            STRING      NOT NULL,
-    user_agent          STRING
+    location            TEXT        NOT NULL,
+    user_agent          TEXT
 )
 """)
 
 user_table_create = ("""
 CREATE TABLE IF NOT EXISTS dim_users
 (
-    user_id             INTEGER     PRIMARY KEY,
-    first_name          STRING      NOT NULL,
-    last_name           STRING      NOT NULL,
-    gender              VARCHAR(1)  NUL NULL,
+    user_id             INTEGER     PRIMARY KEY UNIQUE,
+    first_name          TEXT        NOT NULL,
+    last_name           TEXT        NOT NULL,
+    gender              VARCHAR(1)  NOT NULL,
     level               VARCHAR(5)  NOT NULL
 )
 """)
@@ -86,9 +87,9 @@ CREATE TABLE IF NOT EXISTS dim_users
 song_table_create = ("""
 CREATE TABLE IF NOT EXISTS dim_songs
 (
-    song_id             STRING      PRIMARY KEY SORTKEY,
-    title               STRING      NOT NULL,
-    artist_id           STRING      NOT NULL    DISTKEY,
+    song_id             TEXT        PRIMARY KEY SORTKEY,
+    title               TEXT        NOT NULL,
+    artist_id           TEXT        NOT NULL    DISTKEY,
     year                INTEGER     NOT NULL,
     duration            DECIMAL     NOT NULL
 )
@@ -97,18 +98,18 @@ CREATE TABLE IF NOT EXISTS dim_songs
 artist_table_create = ("""
 CREATE TABLE IF NOT EXISTS dim_artists
 (
-    artist_id           STRING      PRIMARY KEY DISTKEY SORTKEY,
-    name                STRING      NOT NULL,
-    location            STRING      NOT NULL,
-    lattitude           STRING,
-    longitude           STRING
+    artist_id           TEXT      PRIMARY KEY DISTKEY SORTKEY,
+    name                TEXT      NOT NULL,
+    location            TEXT,
+    latitude            TEXT,
+    longitude           TEXT
 )
 """)
 
 time_table_create = ("""
-CREATE TABLE IF NOT EXISTS dim_time
+CREATE TABLE IF NOT EXISTS dim_times
 (
-    start_time          INTEGER     PRIMARY KEY,
+    start_time          BIGINT      PRIMARY KEY,
     hour                INTEGER     NOT NULL,
     day                 INTEGER     NOT NULL,
     week                INTEGER     NOT NULL,
@@ -124,22 +125,22 @@ staging_events_copy = ("""
 COPY staging_events 
 FROM {}
 credentials 'aws_iam_role={}'
-json region 'us-west-2'
-""").format("s3://udacity-dend/log_data","arn:aws:iam::878999672007:role/S3AccessRole")
+json 's3://udacity-dend/log_json_path.json' region 'us-west-2';
+""").format("'s3://udacity-dend/log_data'", DWH_ROLE_ARN)
 
 staging_songs_copy = ("""
 COPY staging_songs 
 FROM {}
 credentials 'aws_iam_role={}'
-json region 'us-west-2'
-""").format("s3://udacity-dend/song_data","arn:aws:iam::878999672007:role/S3AccessRole")
+json 'auto' region 'us-west-2';
+""").format("'s3://udacity-dend/song_data'", DWH_ROLE_ARN)
 
 # FINAL TABLES
 
 songplay_table_insert = ("""
 INSERT INTO fact_songplays (songplay_id, start_time, user_id, song_id, artist_id, session_id, user_agent, level, location)
 SELECT 
-    CONCAT(sessionId, itemInSession) AS songplay_id, 
+    sessionid || '-' || iteminsession AS songplay_id,
     ts AS start_time,
     userId AS user_id,
     song AS song_id,
@@ -149,61 +150,54 @@ SELECT
     level AS level,
     location AS location
 FROM staging_events
-ON CONFLICT DO NOTHING
+WHERE userid IS NOT NULL AND song IS NOT NULL AND artist IS NOT NULL AND location IS NOT NULL
 """)
 
 user_table_insert = ("""
 INSERT INTO dim_users (user_id, first_name, last_name, gender, level)
 SELECT
-    userId AS user_id,
+    DISTINCT(userId) AS user_id,
     firstName AS first_name,
     lastName AS last_name,
     gender AS gender,
     level AS level
 FROM staging_events
-ON CONFLICT (user_id)
-DO UPDATE SET level = excluded.level, first_name = excluded.first_name, last_name = excluded.last_name, gender = excluded.gender
+WHERE userid IS NOT NULL
 """)
 
 song_table_insert = ("""
 INSERT INTO dim_songs (song_id, title, artist_id, year, duration)
 SELECT
-    song_id AS song_id,
+    DISTINCT(song_id) AS song_id,
     title AS title,
     artist_id AS artist_id,
     year AS year,
     duration AS duration
 FROM staging_songs
-ON CONFLICT (song_id)
-DO NOTHING
 """)
 
 artist_table_insert = ("""
-INSERT INTO dim_artists (artist_id, name, location, lattitude, longitude)
+INSERT INTO dim_artists (artist_id, name, location, latitude, longitude)
 SELECT
-    artist_id AS artist_id,
+    DISTINCT(artist_id) AS artist_id,
     artist_name AS name,
     artist_location AS location,
-    artist_lattitude AS lattitude,
+    artist_latitude AS latitude,
     artist_longitude AS longitude
 FROM staging_songs
-ON CONFLICT (artist_id)
-DO NOTHING
 """)
 
 time_table_insert = ("""
-INSERT INTO dim_time (start_time, hour, day, week, month, year, weekday)
+INSERT INTO dim_times (start_time, hour, day, week, month, year, weekday)
 SELECT
-    ts as start_time,
-    EXTRACT(hour from timestamp ts),
-    EXTRACT(day from timestamp ts),
-    EXTRACT(week from timestamp ts),
-    EXTRACT(month from timestamp ts),
-    EXTRACT(year from timestamp ts),
-    EXTRACT(weekday from timestamp ts)
+    DISTINCT(ts) as start_time,
+    EXTRACT(hour from timestamp 'epoch' + ts/1000 * interval '1 second') as hour,
+    EXTRACT(day from timestamp 'epoch' + ts/1000 * interval '1 second') as day,
+    EXTRACT(week from timestamp 'epoch' + ts/1000 * interval '1 second') as week,
+    EXTRACT(month from timestamp 'epoch' + ts/1000 * interval '1 second') as month,
+    EXTRACT(year from timestamp 'epoch' + ts/1000 * interval '1 second') as year,
+    EXTRACT(weekday from timestamp 'epoch' + ts/1000 * interval '1 second') as weekday
 FROM staging_events
-ON CONFLICT (ts)
-DO NOTHING
 """)
 
 # QUERY LISTS
