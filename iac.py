@@ -88,7 +88,7 @@ def create_dwh_iam_role(iam_resource, role_name):
         "Statement": [{
             "Effect": "Allow",
             "Principal": {
-                "Service": ["ec2.amazonaws.com"]},
+                "Service": ["redshift.amazonaws.com"]},
             "Action":["sts:AssumeRole"]}
         ]}
     try:
@@ -265,7 +265,7 @@ def setup_data_warehouse(iam_resource, redshift_resource, ec2_resource):
     create_dwh_iam_role(iam_resource=iam_resource, role_name=DWH_IAM_ROLE_NAME)
 
     # Attach Read S3 Read Only Policy to Created Role
-    print("Attaching S3 Read Policy to DWH_ROLE")
+    print("Attaching S3 Read Policy to DWH IAM ROLE")
     attach_policy_to_iam_role(
         policy_arn=S3_READ_ONLY_POLICY_ARN,
         iam_resource=iam_resource,
