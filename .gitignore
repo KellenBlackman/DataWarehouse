@@ -1,3 +1,5 @@
 aws_cred.cfg
 dwh.cfg
 data_model.drawio
+__pycache__
+settings.json
