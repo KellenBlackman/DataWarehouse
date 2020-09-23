@@ -7,9 +7,9 @@ This schema is designed to answer questions around the song play logs. The lone 
 ![schema](./Images/data_model.png)
 
 ## ETL and Infrastructure
-Extract - From S3
-Transform - With SQL
-Load - Into Redshift
+Extract - From S3<br />
+Transform - With SQL<br />
+Load - Into Redshift<br />
 Scripts - Python
 
 ## Running
