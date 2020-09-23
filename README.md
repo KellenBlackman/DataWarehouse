@@ -21,15 +21,15 @@ KEY=<br />
 SECRET=<br />
 
 [DWH]<br />
-DWH_CLUSTER_TYPE=multi-node<br />
-DWH_NUM_NODES=4<br />
-DWH_NODE_TYPE=dc2.large<br />
-DWH_IAM_ROLE_NAME=dwhRole<br />
-DWH_CLUSTER_IDENTIFIER=dwhCluster<br />
-DWH_DB=sparkify<br />
-DWH_DB_USER=spark_admin<br />
-DWH_DB_PASSWORD=adminPassw0rd<br />
-DWH_PORT=5439
+DWH_CLUSTER_TYPE=<br />
+DWH_NUM_NODES=<br />
+DWH_NODE_TYPE=<br />
+DWH_IAM_ROLE_NAME=<br />
+DWH_CLUSTER_IDENTIFIER=<br />
+DWH_DB=<br />
+DWH_DB_USER=<br />
+DWH_DB_PASSWORD=<br />
+DWH_PORT=
 
 
 Once the aws_cred.cfg file is properly built you will be able to run iac.py. This file outputs the endpoint or host for the database cluster, and the policy arn for the IAM role that allows S3 read access. Enter these into the proper locations in the dwh.cfg file. Once the infrastructure is set up and variables are updated you can run create_tables.py which builds the tables in the redshift cluster. Lastly run the etl.py file to copy the data from the S3 buckets into the Redshift tables.
