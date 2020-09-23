@@ -13,4 +13,23 @@ Load - Into Redshift
 Scripts - Python
 
 ## Running
-Download this project to your computer. To set up data warehouse create a file called aws_cred.cfg with the aws parameters of your key and secret. Then create another section called DWH which contains the cluster details. Once set up properly you will be able to run iac.py. This file outputs the endpoint or host for the database cluster, and the policy arn for the IAM role that allows S3 read access. Once the infrastructure is set up you can run create_tables.py which builds the tables in the redshift cluster. Lastly run the etl.py file to copy the data from teh S3 buckets into the Redshift tables.
+Download this project to your computer. To set up data warehouse create a file called aws_cred.cfg with the following
+
+
+[AWS]
+KEY=
+SECRET=
+
+[DWH]
+DWH_CLUSTER_TYPE=multi-node
+DWH_NUM_NODES=4
+DWH_NODE_TYPE=dc2.large
+DWH_IAM_ROLE_NAME=dwhRole
+DWH_CLUSTER_IDENTIFIER=dwhCluster
+DWH_DB=sparkify
+DWH_DB_USER=spark_admin
+DWH_DB_PASSWORD=adminPassw0rd
+DWH_PORT=5439
+
+
+Once the aws_cred.cfg file is properly built you will be able to run iac.py. This file outputs the endpoint or host for the database cluster, and the policy arn for the IAM role that allows S3 read access. Enter these into the proper locations in the dwh.cfg file. Once the infrastructure is set up and variables are updated you can run create_tables.py which builds the tables in the redshift cluster. Lastly run the etl.py file to copy the data from the S3 buckets into the Redshift tables.
