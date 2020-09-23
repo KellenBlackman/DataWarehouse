@@ -11,3 +11,6 @@ Extract - From S3
 Transform - With SQL
 Load - Into Redshift
 Scripts - Python
+
+## Running
+Download this project to your computer. To set up data warehouse create a file called aws_cred.cfg with the aws parameters of your key and secret. Then create another section called DWH which contains the cluster details. Once set up properly you will be able to run iac.py. This file outputs the endpoint or host for the database cluster, and the policy arn for the IAM role that allows S3 read access. Once the infrastructure is set up you can run create_tables.py which builds the tables in the redshift cluster. Lastly run the etl.py file to copy the data from teh S3 buckets into the Redshift tables.
