@@ -16,29 +16,19 @@ Scripts - Python
 Download this project to your computer. To set up data warehouse create a file called aws_cred.cfg with the following
 
 
-[AWS]
+[AWS]<br />
+KEY=<br />
+SECRET=<br />
 
-KEY=
-
-SECRET=
-
-[DWH]
-DWH_CLUSTER_TYPE=multi-node
-
-DWH_NUM_NODES=4
-
-DWH_NODE_TYPE=dc2.large
-
-DWH_IAM_ROLE_NAME=dwhRole
-
-DWH_CLUSTER_IDENTIFIER=dwhCluster
-
-DWH_DB=sparkify
-
-DWH_DB_USER=spark_admin
-
-DWH_DB_PASSWORD=adminPassw0rd
-
+[DWH]<br />
+DWH_CLUSTER_TYPE=multi-node<br />
+DWH_NUM_NODES=4<br />
+DWH_NODE_TYPE=dc2.large<br />
+DWH_IAM_ROLE_NAME=dwhRole<br />
+DWH_CLUSTER_IDENTIFIER=dwhCluster<br />
+DWH_DB=sparkify<br />
+DWH_DB_USER=spark_admin<br />
+DWH_DB_PASSWORD=adminPassw0rd<br />
 DWH_PORT=5439
 
 
